@@ -1,10 +1,10 @@
 const fs = require("fs").promises;
 
 class ProductManager {
-  constructor() {
+  constructor(path) {
     this.products = {};
     this.countId = 1;
-    this.path = "Products.json";
+    this.path = path;
   }
 
   async addProduct(title, description, price, thumbnail, code, stock) {
@@ -14,11 +14,11 @@ class ProductManager {
       // busca un numero id
       productsObj.forEach((elemento) => {
         if (elemento.idProduct > mayorId) {
-            mayorId = elemento.idProduct
+          mayorId = elemento.idProduct;
         }
       });
 
-     let idProduct = mayorId + 1
+      let idProduct = mayorId + 1;
 
       const Producto_encontrado = Object.values(productsObj).find(
         (elemento) => elemento.code === code
@@ -67,14 +67,19 @@ class ProductManager {
       // });
       return id_encontrado;
     } catch (error) {
-      console.error("Error al consultar usuarios", error);
+      console.error("Error al consultar producto", error);
       return [];
     }
   }
 
-  async getProducts() {
+  async getProducts(limite) {
     try {
-      return await this.readProducts();
+      const productos = await this.readProducts();
+      if (limite) {
+        return productos.slice(0, limite);
+      } else {
+        return productos;
+      }
     } catch (error) {
       console.error("Error al consultar usuarios", error);
       return [];
@@ -101,10 +106,10 @@ class ProductManager {
       if (Object.keys(ProductUpdate).includes(camp)) {
         ProductUpdate[camp] = newvalue;
         console.log(`Informacin actualizada correctamente`);
-        //busco la posicion 
+        //busco la posicion
         const posicion = productsObj.findIndex(
           (elemento) => elemento.idProduct === product_id
-        )
+        );
         // console.log(posicion)
         if (posicion != -1) {
           productsObj[posicion] = ProductUpdate;
@@ -121,25 +126,27 @@ class ProductManager {
 
   async deleteProduct(product_id) {
     try {
-        let productsObj = await this.readProducts();
-        productsObj = productsObj.filter(elemento => elemento.idProduct !== product_id);
-        console.log("Producto eliminado");
-        await fs.writeFile(this.path, JSON.stringify(productsObj, null, 2));
+      let productsObj = await this.readProducts();
+      productsObj = productsObj.filter(
+        (elemento) => elemento.idProduct !== product_id
+      );
+      console.log("Producto eliminado");
+      await fs.writeFile(this.path, JSON.stringify(productsObj, null, 2));
     } catch (error) {
-        console.error("Error al ejecutar la operacion deleteProduct", error);
+      console.error("Error al ejecutar la operacion deleteProduct", error);
     }
-}
+  }
 }
 
-const productmanager = new ProductManager();
+// const productmanager = new ProductManager("../Products.json");
 
 // productmanager.addProduct(
-//   "producto prueba",
+//   "Cereales",
 //   "Este es un producto prueba",
-//   200,
+//   100,
 //   "Sin imagen",
-//   "abc12",
-//   25
+//   "abc123",
+//   5
 // );
 
 // productmanager
@@ -155,3 +162,5 @@ const productmanager = new ProductManager();
 // productmanager.updateProduct(4, "title", "prueba-------------");
 
 // productmanager.deleteProduct(2);
+
+module.exports = ProductManager;
