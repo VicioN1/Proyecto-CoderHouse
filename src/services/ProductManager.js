@@ -7,11 +7,10 @@ class ProductManager {
     this.path = path;
   }
 
-  async addProduct(title, description, price, thumbnail, code, stock) {
+  async addProduct(title, description, code, price, stock, category, thumbnails) {
     try {
       let productsObj = await this.readProducts();
       let mayorId = 0;
-      // busca un numero id
       productsObj.forEach((elemento) => {
         if (elemento.idProduct > mayorId) {
           mayorId = elemento.idProduct;
@@ -23,27 +22,26 @@ class ProductManager {
       const Producto_encontrado = Object.values(productsObj).find(
         (elemento) => elemento.code === code
       );
-      // console.log(Producto_encontrado)
       if (Producto_encontrado) {
-        console.log(`Ya existe un producto con este codigo: ${code}`);
-        return;
+        return (`Ya existe un producto con este codigo: ${code}`);
       }
-
-      const NewProducts = {
+      const newProduct = {
         idProduct,
         title,
         description,
-        price,
-        thumbnail,
         code,
+        price,
+        status : true,
         stock,
+        category,
+        thumbnails : thumbnails || []
       };
 
-      productsObj.push(NewProducts);
+      productsObj.push(newProduct);
       await fs.writeFile(this.path, JSON.stringify(productsObj, null, 2));
-      console.log("Producto agregado exitosamente");
+      return ("Producto agregado exitosamente");
     } catch (error) {
-      console.error("Error al agregar producto", error);
+      return ("Error al agregar producto", error);
     }
   }
 
@@ -54,17 +52,9 @@ class ProductManager {
       const id_encontrado = producto.find(
         (elemento) => elemento.idProduct === product_id
       );
-
       if (!id_encontrado) {
         return "Not found";
       }
-      // // console.log("El Producto con el ID proporcionado existe");
-      // this.products.forEach((elemento) => {
-      //   if (elemento.idProduct == product_id) {
-      //     // console.log("entre")
-      //     producto = elemento;
-      //   }
-      // });
       return id_encontrado;
     } catch (error) {
       console.error("Error al consultar producto", error);
@@ -105,16 +95,13 @@ class ProductManager {
       let productsObj = await this.readProducts();
       if (Object.keys(ProductUpdate).includes(camp)) {
         ProductUpdate[camp] = newvalue;
-        console.log(`Informacin actualizada correctamente`);
-        //busco la posicion
+        console.log(`Informacin actualizada correctamente: `,camp," = ", newvalue);
         const posicion = productsObj.findIndex(
           (elemento) => elemento.idProduct === product_id
         );
-        // console.log(posicion)
         if (posicion != -1) {
           productsObj[posicion] = ProductUpdate;
         }
-        // console.log(ProductUpdate)
         await fs.writeFile(this.path, JSON.stringify(productsObj, null, 2));
       } else {
         console.error("El campo especificado no existe en el objeto");
@@ -130,37 +117,12 @@ class ProductManager {
       productsObj = productsObj.filter(
         (elemento) => elemento.idProduct !== product_id
       );
-      console.log("Producto eliminado");
       await fs.writeFile(this.path, JSON.stringify(productsObj, null, 2));
+      return("Producto eliminado");
     } catch (error) {
-      console.error("Error al ejecutar la operacion deleteProduct", error);
+      return("Error al ejecutar la operacion deleteProduct", error);
     }
   }
 }
-
-// const productmanager = new ProductManager("../Products.json");
-
-// productmanager.addProduct(
-//   "Cereales",
-//   "Este es un producto prueba",
-//   100,
-//   "Sin imagen",
-//   "abc123",
-//   5
-// );
-
-// productmanager
-//   .getProducts()
-//   .then((producto) => console.log(producto))
-//   .catch((error) => console.error(error));
-
-// productmanager
-//   .getProductById(1)
-//   .then((producto) => console.log(producto))
-//   .catch((error) => console.error(error));
-
-// productmanager.updateProduct(4, "title", "prueba-------------");
-
-// productmanager.deleteProduct(2);
 
 module.exports = ProductManager;

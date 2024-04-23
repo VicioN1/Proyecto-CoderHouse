@@ -1,31 +1,16 @@
 const express = require("express");
+const path = require("path")
 const app = express();
+const productsRouter = require("./routes/router.products.js")
+const cartsRouter = require("./routes/router.carts.js")
 const port = 8080;
-const ProductManager = require("./ProductManager.js");
+
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 
-const manager = new ProductManager("../Products.json");
-
-app.get("/products/:id", (req, res) => {
-  const product_id = parseInt(req.params.id);
-
-  manager
-    .getProductById(product_id)
-    .then((producto) => res.json(producto))
-    .catch((error) =>
-      res.status(404).json({ message: error })
-    );
-  // res.send("Hello World!");
-});
-
-app.get("/products", (req, res) => {
-  let {limit}= req.query
-  manager
-    .getProducts(limit)
-    .then((producto) => res.json(producto))
-    .catch((error) => res.status(404).json({ message: error }));
-});
+app.use("/api/products/", productsRouter)
+app.use("/api/carts/", cartsRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
