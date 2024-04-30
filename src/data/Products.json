@@ -1,19 +1,5 @@
 [
   {
-    "idProduct": 1,
-    "title": "Manzana",
-    "description": "Fruta fresca y saludable",
-    "code": "APL123",
-    "price": 1.5,
-    "status": true,
-    "stock": 100,
-    "category": "Frutas",
-    "thumbnails": [
-      "https://example.com/apple1.jpg",
-      "https://example.com/apple2.jpg"
-    ]
-  },
-  {
     "idProduct": 2,
     "title": "Leche",
     "description": "Producto lácteo esencial",

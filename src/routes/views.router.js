@@ -17,12 +17,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/realtimeproducts", (req, res) => {
-  manager
-    .getProducts()
-    .then((producto) => {
-      res.render("realTimeProducts", {});
-    })
-    .catch((error) => null);
+  res.render("realTimeProducts", {});
 });
 
 module.exports = router;
