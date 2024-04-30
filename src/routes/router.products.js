@@ -7,6 +7,7 @@ const manager = new ProductManager(
   path.join(__dirname, "../data/Products.json")
 );
 
+
 router.get("/", (req, res) => {
   let { limit } = req.query;
   manager
@@ -83,7 +84,7 @@ router.put("/:pid", (req, res) => {
       }
     }
 
-    res.json({ message: "Se actualizo correctamente" })
+    res.json({ message: "Se actualizo correctamente" });
   } catch (error) {
     console.error("Error al agregar el producto:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -91,11 +92,15 @@ router.put("/:pid", (req, res) => {
 });
 
 router.delete("/:pid", (req, res) => {
+  
   const product_id = parseInt(req.params.pid);
-  console.log(product_id);
+  let letmessage;
   manager
     .deleteProduct(product_id)
-    .then((message) => res.json({ message: message }))
+    .then((message) => {
+      console.log("entre delete")
+      res.json({ message: message });
+    })
     .catch((error) => res.status(404).json({ message: error }));
 });
 

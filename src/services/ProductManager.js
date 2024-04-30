@@ -113,6 +113,7 @@ class ProductManager {
 
   async deleteProduct(product_id) {
     try {
+      console.log(product_id)
       let productsObj = await this.readProducts();
       productsObj = productsObj.filter(
         (elemento) => elemento.idProduct !== product_id
@@ -123,6 +124,7 @@ class ProductManager {
       return("Error al ejecutar la operacion deleteProduct", error);
     }
   }
+
 }
 
 module.exports = ProductManager;
