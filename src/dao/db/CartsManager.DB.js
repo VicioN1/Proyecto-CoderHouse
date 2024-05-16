@@ -64,7 +64,7 @@ class CartsManager {
       return cart;
     } catch (error) {
       console.error("Error al ejecutar la operación", error);
-      throw error; // Puedes manejar este error según tus necesidades
+      throw error;
     }
   }
 

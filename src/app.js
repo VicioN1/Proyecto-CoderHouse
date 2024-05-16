@@ -19,7 +19,7 @@ console.log(process.env.MONGO_URL)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb+srv://Fernando:123456fer@cluster0.pgftg4n.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.MONGO_URL)
     .then(() => { console.log("Conectado a la base de datos") })
     .catch(error => console.error("Error en la conexion", error))
 
