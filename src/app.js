@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const app = express();
 const handlebars = require("express-handlebars");
 const viewsRouter = require("./routes/views.router.js");
@@ -7,10 +6,22 @@ const productsRouter = require("./routes/router.products.js");
 const cartsRouter = require("./routes/router.carts.js");
 const { Server } = require("socket.io");
 const port = 8080;
-const {handleSocketConnection} = require("../src/services/SocketService")
+const mongoose = require("mongoose");
+const {handleSocketConnection} = require("../src/dao/services/SocketService.js")
+const dotenv = require("dotenv");
+
+
+
+
+dotenv.config()
+console.log(process.env.MONGO_URL)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+mongoose.connect('mongodb+srv://Fernando:123456fer@cluster0.pgftg4n.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0')
+    .then(() => { console.log("Conectado a la base de datos") })
+    .catch(error => console.error("Error en la conexion", error))
 
 const httpServer = app.listen(
   port,

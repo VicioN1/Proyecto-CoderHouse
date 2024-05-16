@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const ProductManager = require("../services/ProductManager.js");
+const ProductManager = require("../dao/db/ProductManager.DB");
 
-const manager = new ProductManager(
-  path.join(__dirname, "../data/Products.json")
-);
+const manager = new ProductManager();
+// const manager = new ProductManager(
+//   path.join(__dirname, "../data/Products.json")
+// );
 
 
 router.get("/", (req, res) => {
@@ -18,7 +19,6 @@ router.get("/", (req, res) => {
 
 router.get("/:pid", (req, res) => {
   const product_id = parseInt(req.params.pid);
-  console.log(product_id);
   manager
     .getProductById(product_id)
     .then((message) => res.json({ message: message }))
@@ -28,7 +28,8 @@ router.get("/:pid", (req, res) => {
 router.post("/", (req, res) => {
   try {
     const { title, description, code, price, stock, category, thumbnails } =
-      req.body;
+    req.body;
+    console.log(title)
 
     if (!title || !description || !code || !price || !stock || !category) {
       return res.status(400).json({ message: "Faltan campos obligatorios" });

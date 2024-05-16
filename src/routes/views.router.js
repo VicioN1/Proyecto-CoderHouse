@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const ProductManager = require("../services/ProductManager.js");
+const ProductManager = require("../dao/db/ProductManager.DB");
 
-const manager = new ProductManager(
-  path.join(__dirname, "../data/Products.json")
-);
+const manager = new ProductManager();
+// const manager = new ProductManager(
+//   path.join(__dirname, "../data/Products.json")
+// );
 
 router.get("/", (req, res) => {
   manager
@@ -19,5 +20,10 @@ router.get("/", (req, res) => {
 router.get("/realtimeproducts", (req, res) => {
   res.render("realTimeProducts", {});
 });
+
+router.get("/chat", (req, res) => {
+  res.render("chat", {});
+});
+
 
 module.exports = router;

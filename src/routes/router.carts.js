@@ -1,13 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const CartsManager = require("../services/CartsManager.js");
-const ProductManager = require("../services/ProductManager.js");
+const CartsManager = require("../dao/db/CartsManager.DB");
+const ProductManager = require("../dao/db/ProductManager.DB");
 
-const manager = new CartsManager(path.join(__dirname, "../data/Carts.json"));
-const managerProducts = new ProductManager(
-  path.join(__dirname, "../data/Products.json")
-);
+const manager = new CartsManager();
+const managerProducts = new ProductManager();
 
 router.post("/", (req, res) => {
   manager
