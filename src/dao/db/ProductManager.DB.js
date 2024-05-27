@@ -40,6 +40,7 @@ class ProductManager {
       if (!id_encontrado) {
         return "Not found";
       }
+      console.log("get", id_encontrado)
       return id_encontrado;
     } catch (error) {
       console.error("Error al consultar producto", error);
@@ -47,11 +48,44 @@ class ProductManager {
     }
   }
 
-  async getProducts(limite) {
+  async getProducts(limite,page, sort, query, status) {
     try {
+      const filtro = {}
+
+      const options = {
+        limit: (limite == null ? 10 : parseInt(limite)),
+        page: (page == null ? 1 : parseInt(page)),
+      };
+
+      
+      options.sort = { price: sort === 'asc' ? 1 : -1 }
+      
+      if (query) {
+        filtro.category = { $regex: query, $options: 'i' };
+      }
+  
+      if (status === 'true') {
+        filtro.status = true;
+      } else if (status === 'false') {
+        console.log("entreee")
+        filtro.status = false;
+      }
+
+        const params = new URLSearchParams();
+        if (options.sort) params.append('sort', sort);
+        if (filtro.category) params.append('query', query);
+        if (filtro.status) params.append('status', status);
+        
+
+
+      const products = await productsModel.paginate(filtro, options )
+      products.params= params.toString()
+      return products;
+
       const productos = await this.readProducts();
-      if (limite) {
-        const products = await productsModel.find().limit(limite);
+      if (sort) {
+        products.sort.price( sort === 'asc' ? 1 : -1)
+        // const products = await productsModel.paginate()
         return products;
       } else {
         const products = await productsModel.find();

@@ -25,5 +25,13 @@ router.get("/chat", (req, res) => {
   res.render("chat", {});
 });
 
+router.get('/carts/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  console.log(userId)
+  
+  // Renderiza la plantilla Handlebars y pasa el userId
+  res.render('carts', { userId });
+});
 
 module.exports = router;

@@ -8,13 +8,34 @@ const manager = new ProductManager();
 //   path.join(__dirname, "../data/Products.json")
 // );
 
-
+const miurl = `http://localhost:8080/api/products`;
 router.get("/", (req, res) => {
-  let { limit } = req.query;
+  try {
+  const { limit , page , sort, query, status } = req.query;
+
+
   manager
-    .getProducts(limit)
-    .then((producto) => res.json(producto))
+    .getProducts(limit , page , sort, query, status)
+    .then((producto) => 
+      res.json({
+        status: 'success',
+        payload: producto.docs,
+        totalPages: producto.totalPages,
+        prevPage: producto.prevPage,
+        nextPage: producto.nextPage,
+        page: producto.page,
+        hasPrevPage: producto.hasPrevPage,
+        hasNextPage: producto.hasNextPage,
+        prevLink: producto.hasPrevPage ? `${miurl}?page=${producto.prevPage}&limit=${producto.limit}&${producto.params}` : null,
+        nextLink: producto.hasNextPage ? `${miurl}?page=${producto.nextPage}&limit=${producto.limit}&${producto.params}` : null
+        // nextLink: producto.hasNextPage ? `${miurl}?page=${producto.nextPage}&limit=${producto.limit}&sort=${sort}&query=${query}&status=${status}` : null
+      })
+    )
     .catch((error) => res.status(404).json({ message: error }));
+  } catch (error) {
+    console.error('Error al obtener los productos', error);
+    res.status(500).json({ status: 'error', message: 'Error al obtener los productos' });
+  }
 });
 
 router.get("/:pid", (req, res) => {

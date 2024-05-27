@@ -15,7 +15,7 @@ router.post("/", (req, res) => {
 });
 
 router.get("/:cid", (req, res) => {
-  const cart_id = parseInt(req.params.cid);
+  const cart_id = req.params.cid;
   let product;
   manager
     .getCartsById(cart_id)
@@ -26,27 +26,58 @@ router.get("/:cid", (req, res) => {
     .catch((error) => res.status(404).json({ message: error }));
 });
 
-router.post("/:cid/product/:pid", (req, res) => {
+router.post("/:cid/product/:pid", async (req, res) => {
   try {
-    const cart_id = parseInt(req.params.cid);
-    const product_id = parseInt(req.params.pid);
+    const cart_id = req.params.cid;
+    const product_id = req.params.pid;
 
-    managerProducts
-      .getProductById(product_id)
-      .then((message) =>{
-        if (message != "Not found") {
-            manager
-              .updateProduct(cart_id, product_id)
-              .then((producto) => res.json({ message: producto }))
-              .catch((error) => res.status(404).json({ message: error }));
-          }else{
-            res.json({ message: "El producto no existe" })
-          }
-        })
-      .catch((error) => res.status(404).json({ message: error }));
+    const updatedCart = await manager.updateProduct(cart_id, product_id);
+    res.json({ message: updatedCart });
   } catch (error) {
     console.error("Error al agregar el producto:", error);
     res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+router.delete("/:cid/product/:pid", async (req, res) => {
+  try {
+    const result = await manager.deleteProductFromCart(
+      req.params.cid,
+      req.params.pid
+    );
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/:cid", async (req, res) => {
+  try {
+    const result = await manager.updateCart(req.params.cid, req.body.products);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/:cid/product/:pid", async (req, res) => {
+  try {
+    const result = await manager.updateProductQuantity(
+      req.params.cid,
+      req.params.pid,
+      req.body.quantity
+    );
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.delete("/:cid", async (req, res) => {
+  try {
+    const result = await manager.deleteAllProductsFromCart(req.params.cid);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
