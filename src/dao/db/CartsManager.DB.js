@@ -1,5 +1,5 @@
 // managers/CartsManager.js
-const cartsModel = require("../models/carts.model");
+const cartsModel = require("../../models/carts.model");
 const ProductManager = require("../db/ProductManager.DB");
 
 const managerProducts = new ProductManager();

@@ -1,4 +1,4 @@
-const chatModel = require("../models/chat.model");
+const chatModel = require("../../models/chat.model");
 
 class ChatManager {
   constructor() {
