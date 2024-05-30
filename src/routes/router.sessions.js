@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;
     try {
-        const newUser = new User({ first_name, last_name, email, age, password, role: 'user' });  // Asignar rol 'user' por defecto
+        const newUser = new User({ first_name, last_name, email, age, password, role: 'user' }); 
         await newUser.save();
         res.redirect('/login');
     } catch (err) {
@@ -21,7 +21,6 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).send('Usuario no encontrado');
         
-        // Verificar la contraseña
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).send('Contraseña incorrecta');
         
@@ -31,9 +30,9 @@ router.post('/login', async (req, res) => {
             last_name: user.last_name,
             email: user.email,
             age: user.age,
-            role: user.role  // Incluir el rol del usuario en la sesión
+            role: user.role  
         };
-        res.redirect('/profile');
+        res.redirect('/realtimeproducts');
     } catch (err) {
         res.status(500).send('Error al iniciar sesión');
     }

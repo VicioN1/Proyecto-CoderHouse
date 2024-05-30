@@ -14,6 +14,14 @@ const managercarts = new CartsManager();
 function handleSocketConnection(socketServer) {
     socketServer.on('connection', socket => {
         console.log("Nuevo cliente conectado");
+        socket.on('new', async product => {
+            try {
+                const products = await manager.getProducts(null , product.page , null, null, null);
+                socketServer.emit('realTimeProducts', products);
+            } catch (error) {
+                console.error('Error adding product:', error);
+            }
+        });
 
         socket.on('newcarrito', async product => {
             try {
@@ -35,6 +43,7 @@ function handleSocketConnection(socketServer) {
 
         socket.on('viewcarrito', async carts => {
             try {
+                console.log("viewcarrito")
                 const carrito = await managercarts.getCartsById(carts);
                 socketServer.emit('realTimeCarts', carrito );
             } catch (error) {
@@ -63,16 +72,7 @@ function handleSocketConnection(socketServer) {
             }
         });
 
-        socket.on('new', async product => {
-            try {
-                console.log(product.page)
-                const products = await manager.getProducts(null , product.page , null, null, null);
-                console.log(products)
-                socketServer.emit('realTimeProducts', products);
-            } catch (error) {
-                console.error('Error adding product:', error);
-            }
-        });
+        
 
         socket.on('eliminarProducto', async productId => {
             try {

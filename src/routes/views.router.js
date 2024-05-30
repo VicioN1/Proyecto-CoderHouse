@@ -18,8 +18,8 @@ router.get("/", (req, res) => {
     .catch((error) => ({ message: error }));
 });
 
-router.get("/realtimeproducts", (req, res) => {
-  res.render("realTimeProducts", {});
+router.get("/realtimeproducts", isAuthenticated, (req, res) => {
+  res.render("realTimeProducts", { user: req.session.user});
 });
 
 router.get("/chat", (req, res) => {
@@ -30,8 +30,6 @@ router.get('/carts/:userId', (req, res) => {
   const userId = req.params.userId;
 
   console.log(userId)
-  
-  // Renderiza la plantilla Handlebars y pasa el userId
   res.render('carts', { userId });
 });
 

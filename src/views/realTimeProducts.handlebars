@@ -18,6 +18,13 @@
     }
 </style>
 <div>
+    <h1>Perfil de {{user.first_name}} {{user.last_name}}</h1>
+    <p>Email: {{user.email}}</p>
+    <p>Edad: {{user.age}}</p>
+    <p>Rol: {{user.role}}</p>
+    <form action="/api/sessions/logout" method="POST">
+        <button type="submit">Cerrar Sesión</button>
+    </form>
     <button id="viewCart" data-user-id="12345">Ver Carrito</button> <!-- Asegúrate de que el ID del usuario o del carrito sea dinámico -->
     <form id="productForm">
         <h2>Agregar Nuevo Producto</h2>
@@ -74,7 +81,7 @@
 
     document.getElementById('viewCart').addEventListener('click', function () {
         {{!-- const userId = this.getAttribute('data-user-id');  --}}
-        window.location.href = `/carts/${idcarrot}`; // Redirigir a la ruta del carrito con el ID
+        window.location.href = `/carts/${idcarrot}`;
     });
 
     
@@ -132,28 +139,6 @@
                 socket.emit('eliminarProducto', productCode);
             });
         });
-
-        {{!-- document.querySelectorAll('.increaseQuantity').forEach(button => {
-            button.addEventListener('click', function () {
-                const productCode = this.getAttribute('data-product-code');
-                const quantitySpan = document.getElementById(`quantity-${productCode}`);
-                let quantity = parseInt(quantitySpan.innerText);
-                quantity++;
-                quantitySpan.innerText = quantity;
-            });
-        });
-
-        document.querySelectorAll('.decreaseQuantity').forEach(button => {
-            button.addEventListener('click', function () {
-                const productCode = this.getAttribute('data-product-code');
-                const quantitySpan = document.getElementById(`quantity-${productCode}`);
-                let quantity = parseInt(quantitySpan.innerText);
-                if (quantity > 1) {
-                    quantity--;
-                    quantitySpan.innerText = quantity;
-                }
-            });
-        }); --}}
 
         document.querySelectorAll('.addToCartButton').forEach(button => {
             button.addEventListener('click', function () {

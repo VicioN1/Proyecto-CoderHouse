@@ -77,7 +77,6 @@ class ProductManager {
         if (filtro.status) params.append('status', status);
         
 
-
       const products = await productsModel.paginate(filtro, options )
       products.params= params.toString()
       return products;
