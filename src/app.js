@@ -14,6 +14,9 @@ const {
 const dotenv = require("dotenv");
 const MongoStore = require("connect-mongo") 
 const session = require("express-session") 
+const passport = require("passport")
+const initializePassport = require('./config/passport.config.js')
+
 
 
 dotenv.config();
@@ -40,6 +43,11 @@ app.use(
     // cookie: { maxAge: 180 * 60 * 1000 },
   })
 );
+
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
+
 const httpServer = app.listen(
   port,
   console.log(`Server running on port ${port}`)
