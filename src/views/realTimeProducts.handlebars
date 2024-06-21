@@ -22,10 +22,11 @@
     <p>Email: {{user.email}}</p>
     <p>Edad: {{user.age}}</p>
     <p>Rol: {{user.role}}</p>
+    <p>cart: {{user.cart}}</p>
     <form action="/api/sessions/logout" method="POST">
         <button type="submit">Cerrar Sesión</button>
     </form>
-    <button id="viewCart" data-user-id="12345">Ver Carrito</button> <!-- Asegúrate de que el ID del usuario o del carrito sea dinámico -->
+    <button id="viewCart" data-user-id="12345">Ver Carrito</button>
     <form id="productForm">
         <h2>Agregar Nuevo Producto</h2>
         <label for="title">Título:</label>
@@ -52,7 +53,7 @@
     const socket = io();
     let currentPage = 1;
     let hasPrevPage, hasNextPage, prevPage, nextPage;
-    let idcarrot
+    let idcarrot= {{user.cart}}
 
     const prevButton = document.getElementById('prevButton');
     const nextButton = document.getElementById('nextButton');
@@ -60,13 +61,7 @@
     function loadProducts(page) {
         socket.emit('new', { page: page });
     }
-    function newcarrito() {
-        socket.emit('newcarrito', ""); 
-    }
 
-    socket.on('carrito', carrito =>{
-            idcarrot = carrito
-    })
 
     document.getElementById('productForm').addEventListener('submit', function (event) {
         event.preventDefault();
@@ -149,7 +144,6 @@
         });
     });
 
-    newcarrito();
     loadProducts(currentPage);
 </script>
 
