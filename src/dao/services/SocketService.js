@@ -23,15 +23,6 @@ function handleSocketConnection(socketServer) {
             }
         });
 
-        socket.on('newcarrito', async product => {
-            try {
-                const carrito = await managercarts.addCarts(); 
-                socketServer.emit('carrito', carrito);
-            } catch (error) {
-                console.error('Error adding carrito:', error);
-            }
-        });
-
         socket.on('agregarAlCarrito', async carts => {
             try {
                 const carrito = await managercarts.updateProduct(carts.idcarrot, carts.productCode);

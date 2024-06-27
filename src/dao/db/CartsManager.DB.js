@@ -27,9 +27,10 @@ class CartsManager {
 
   async getCartsById(cart_id) {
     try {
-      let cart = await cartsModel
+      const cart = await cartsModel
         .findOne({ id: cart_id })
         .populate("products.product");
+
       return cart;
     } catch (error) {
       console.error("Error al consultar Carrito", error);

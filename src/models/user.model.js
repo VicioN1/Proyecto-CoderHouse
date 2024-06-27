@@ -9,7 +9,13 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     age: { type: Number, required: true },
     password: { type: String, required: true },
-    cart: { type: Number, required: true },
+    carts: [{
+        cart_id: Number,
+        cart: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Carts' 
+        }
+      }],
     role: { type: String, enum: ['user', 'admin'], default: 'user' }
 });
 

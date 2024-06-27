@@ -21,19 +21,25 @@ const initializePassport = () => {
           console.log(profile);
           let user = await User.findOne({ email: profile._json.email });
           if (!user) {
-            const carrito = await manager.addCarts(); 
-            let newUser = {
+            console.log("entre 1 -------------------------------------")
+            const carrito = await manager.addCarts();
+            const idcarrito = await manager.getCartsById(carrito); 
+            const newUser = {
               first_name: profile._json.name,
               last_name: " ",
               email: profile._json.email,
               age: 20,
               password: " ",
-              cart: carrito,
+              carts: [{
+                cart_id: idcarrito.id,
+                cart: idcarrito._id
+              }],
               role: "user",
             };
-            let result = await User.create(newUser);
+            const result = await User.create(newUser);
             done(null, result);
           } else {
+            console.log("entre 2 --------------------------------------")
             done(null, user);
           }
         } catch (error) {
@@ -48,6 +54,7 @@ const initializePassport = () => {
   });
 
   passport.deserializeUser(async (id, done) => {
+
     let user = await User.findById(id);
     done(null, user);
   });

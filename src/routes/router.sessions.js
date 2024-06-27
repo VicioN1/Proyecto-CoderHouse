@@ -1,28 +1,19 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const User = require("../models/user.model");
 const passport = require("passport");
-const CartsManager = require("../dao/db/CartsManager.DB");
+const Usermanager = require("../dao/db/UserManager.DB");
 
 const router = express.Router();
-const manager = new CartsManager();
+const manager = new Usermanager();
 router.post("/register", async (req, res) => {
   const { first_name, last_name, email, age, password } = req.body;
-  let id
   try {
-    const carrito = await manager.addCarts();
-    const newUser = new User({
-      first_name,
-      last_name,
-      email,
-      age,
-      password,
-      cart : carrito,
-      role: "user",
-    });
-    await newUser.save();
-    res.redirect("/login");
+    const newUser = await manager
+      .addUser(first_name, last_name, email, age, password)
+      .then((newUser) => res.redirect("/login"))
+      .catch((error) => console.error(error));
   } catch (err) {
+    console.log(err);
     res.status(500).send("Error al registrar usuario");
   }
 });
@@ -30,11 +21,15 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await manager.getUserById(email)
+    console.log("user 1 "+ user)
     if (!user) return res.status(404).send("Usuario no encontrado");
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).send("Contraseña incorrecta");
+
+    const carts = await manager.getCartsById(user._id);
+    console.log(carts);
 
     req.session.user = {
       id: user._id,
@@ -42,7 +37,7 @@ router.post("/login", async (req, res) => {
       last_name: user.last_name,
       email: user.email,
       age: user.age,
-      cart : user.cart,
+      cart: carts.cart_id,
       role: user.role,
     };
     res.redirect("/realtimeproducts");
@@ -68,7 +63,22 @@ router.get(
   "/githubcallback",
   passport.authenticate("github", { failureRedirect: "/login" }),
   async (req, res) => {
-    req.session.user = req.user;
+
+    const user = req.user
+    console.log("user "+ user);
+
+    const carts = await manager.getCartsById(user._id);
+    console.log(carts);
+
+    req.session.user = {
+      id: user._id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      age: user.age,
+      cart: carts.cart_id,
+      role: user.role,
+    };
     res.redirect("/realtimeproducts");
   }
 );
