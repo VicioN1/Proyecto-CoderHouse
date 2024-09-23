@@ -2,9 +2,8 @@ const passport = require("passport");
 const GitHubStrategy = require("passport-github2");
 const User = require("../models/user.model");
 const dotenv = require("dotenv");
-const CartsManager = require("../dao/db/CartsManager.DB");
+const { cartService }= require('../services/repository.js');
 dotenv.config();
-const manager = new CartsManager();
 
 const initializePassport = () => {
   passport.use(
@@ -17,13 +16,12 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          
-          console.log(profile);
           let user = await User.findOne({ email: profile._json.email });
+          console.log(profile._json.email )
+          console.log(user)
           if (!user) {
-            console.log("entre 1 -------------------------------------")
-            const carrito = await manager.addCarts();
-            const idcarrito = await manager.getCartsById(carrito); 
+            const carrito = await cartService.addCarts();
+            const idcarrito = await cartService.getCartId(carrito); 
             const newUser = {
               first_name: profile._json.name,
               last_name: " ",
@@ -39,7 +37,6 @@ const initializePassport = () => {
             const result = await User.create(newUser);
             done(null, result);
           } else {
-            console.log("entre 2 --------------------------------------")
             done(null, user);
           }
         } catch (error) {

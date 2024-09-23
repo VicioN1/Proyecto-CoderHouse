@@ -1,36 +1,35 @@
 const express = require("express");
 const app = express();
 const handlebars = require("express-handlebars");
-const viewsRouter = require("./routes/views.router.js");
-const productsRouter = require("./routes/router.products.js");
-const cartsRouter = require("./routes/router.carts.js");
-const sessionsRouter = require("./routes/router.sessions.js");
-const { Server } = require("socket.io");
-const port = 8080;
-const mongoose = require("mongoose");
-const {
-  handleSocketConnection,
-} = require("../src/dao/services/SocketService.js");
+const path = require("path");
 const dotenv = require("dotenv");
-const MongoStore = require("connect-mongo") 
-const session = require("express-session") 
-const passport = require("passport")
-const initializePassport = require('./config/passport.config.js')
+const MongoStore = require("connect-mongo");
+const session = require("express-session");
+const passport = require("passport");
+const cookieParser = require("cookie-parser");
+const { Server } = require("socket.io");
 
+const mockingRouter = require("./routers/mockingRouter");
+const viewsRouter = require("./routers/views.router.js");
+const thumbnailsRouter = require("./routers/thumbnailsRouter.js");
+const productsRoutes = require("./routers/productRouter.js");
+const cartsRoutes = require("./routers/cartRouter.js");
+const sessionsRoutes = require("./routers/sessionsRoutes");
+const userRoutes = require("./routers/usersRouter.js");
+const loggerRouter = require("./routers/loggerRouter.js");
+const config = require("./config/config.js");
+const { handleSocketConnection } = require("./SocketService.js");
+const connectDB = require('./config/dbConfig.js');
+const initializePassport = require('./config/passport.config.js');
 
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUiExpress = require('swagger-ui-express');
 
-dotenv.config();
-console.log(process.env.MONGO_URL);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => {
-    console.log("Conectado a la base de datos");
-  })
-  .catch((error) => console.error("Error en la conexion", error));
+connectDB();
 
 app.use(
   session({
@@ -38,30 +37,53 @@ app.use(
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URL
+      mongoUrl: config.MONGO_URL
     }),
     // cookie: { maxAge: 180 * 60 * 1000 },
   })
 );
 
-initializePassport()
-app.use(passport.initialize())
-app.use(passport.session())
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+app.use(cookieParser());
 
 const httpServer = app.listen(
-  port,
-  console.log(`Server running on port ${port}`)
+  config.PORT || 8080,
+  () => console.log(`Server running on port ${config.PORT || 8080}`)
 );
+
+const swaggerOptions = {
+  definition: {
+      openapi: '3.0.1',
+      info: {
+          title: 'Documentacion',
+          description: 'API pensada para Ecommers'
+      }
+  },
+  apis: [path.join(__dirname, 'docs/**/*.yaml')],
+}
+
+const specs = swaggerJsdoc(swaggerOptions);
+app.use('/api/docs',swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+
+
 const socketServer = new Server(httpServer);
-
-app.engine("handlebars", handlebars.engine());
-app.set("views", __dirname + "/views");
-app.set("view engine", "handlebars");
-app.use(express.static(__dirname + "/public"));
-
-app.use("/api/products/", productsRouter);
-app.use("/api/carts/", cartsRouter);
-app.use('/api/sessions', sessionsRouter);
-app.use("/", viewsRouter);
-
 handleSocketConnection(socketServer);
+
+app.use(express.static(path.join(__dirname, "/public")));
+app.engine("handlebars", handlebars.engine());
+app.set("views", path.join(__dirname, "/views"));
+app.set("view engine", "handlebars");
+
+
+app.use("/mocking" , mockingRouter);
+app.use('/Testlogger', loggerRouter );
+app.use("/api/products/", productsRoutes);
+app.use("/api/carts/", cartsRoutes);
+app.use("/api/sessions", sessionsRoutes);
+app.use("/api/user", userRoutes);
+app.use("/", viewsRouter);
+app.use("/api/thumbnails", thumbnailsRouter);
